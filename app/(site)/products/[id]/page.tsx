@@ -283,15 +283,6 @@ export default function ProductDetailPage() {
 
   return (
     <main className="font-spline">
-      <style>{`
-        @keyframes popIn {
-          0% { opacity: 0; transform: scale(0.97) translateY(5px); }
-          100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .animate-pop-in {
-          animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}</style>
       <section className="max-w-[1604px] mx-auto px-4 lg:px-10 py-10">
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <a className="hover:text-[#003366] font-semibold transition" href="/">
@@ -309,13 +300,21 @@ export default function ProductDetailPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-5">
-            <div className="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm flex justify-center mb-4 min-h-[300px] items-center">
-              <img
-                key={activeImage}
-                src={activeImage || (product.Thumbnail ? `https://api.25zone.io.vn${product.Thumbnail}` : "/img/placeholder.png")}
-                alt={product.Name_product}
-                className="w-full max-w-[420px] max-h-[420px] object-contain animate-pop-in"
-              />
+            <div className="border border-gray-200 rounded-2xl bg-white shadow-sm mb-4 min-h-[300px] lg:min-h-[420px] flex items-center overflow-hidden relative">
+              <div 
+                className="flex transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] w-full h-full"
+                style={{ transform: `translateX(-${Math.max(0, displayImages.indexOf(activeImage)) * 100}%)` }}
+              >
+                {(displayImages.length > 0 ? displayImages : [""]).map((img, idx) => (
+                  <div key={idx} className="w-full h-full flex-shrink-0 flex items-center justify-center p-6">
+                    <img
+                      src={img || (product.Thumbnail ? `https://api.25zone.io.vn${product.Thumbnail}` : "/img/placeholder.png")}
+                      alt={`${product.Name_product} - ${idx + 1}`}
+                      className="w-full max-w-[420px] max-h-[420px] object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
             {displayImages.length > 1 && (
