@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -296,8 +296,7 @@ export default function OrderDetailPage() {
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-gray-600">Trạng thái thanh toán</span>
                               <span className="font-semibold text-gray-800">
-                                {Number(order.Status_payment) === 1 ? "Đã thanh toán" : "Chưa thanh toán"}
-                              </span>
+                                {Number(order.Status_payment) === 1 ? "Đã thanh toán" : "Chưa thanh toán"}                              </span>
                             </div>
                           </div>
                         </div>

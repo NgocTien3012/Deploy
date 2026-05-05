@@ -138,7 +138,7 @@ export default function OrderSuccessPage() {
                     <div className="rounded-2xl border border-gray-100 p-4">
                       <Row
                         label="Thanh toán"
-                        value={order.payment_method_name || "COD"}
+                        value={order.Payment_method_name || "COD"}
                       />
                       <div className="h-px bg-gray-100 my-3" />
                       <Row label="Vận chuyển" value="Giao tiêu chuẩn" />

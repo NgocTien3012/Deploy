@@ -124,11 +124,11 @@ export default function ProductDetailPage() {
 
   const images = useMemo(() => {
     let urls: string[] = [];
-    
+
     // Nếu API trả về mảng Images, ưu tiên dùng nó
     if (product?.Images && Array.isArray(product.Images) && product.Images.length > 0) {
       urls = product.Images;
-    } 
+    }
     // Nếu không có mảng Images, fallback về Thumbnail
     else if (product?.Thumbnail) {
       try {
@@ -301,7 +301,7 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-5">
             <div className="border border-gray-200 rounded-2xl bg-white shadow-sm mb-4 min-h-[300px] lg:min-h-[420px] flex items-center overflow-hidden relative">
-              <div 
+              <div
                 className="flex transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] w-full h-full"
                 style={{ transform: `translateX(-${Math.max(0, displayImages.indexOf(activeImage)) * 100}%)` }}
               >
@@ -324,11 +324,10 @@ export default function ProductDetailPage() {
                     key={idx}
                     type="button"
                     onClick={() => setActiveImage(img)}
-                    className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 overflow-hidden transition-all ${
-                      activeImage === img
-                        ? "border-[#003366] shadow-md"
-                        : "border-transparent hover:border-gray-300"
-                    }`}
+                    className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 overflow-hidden transition-all ${activeImage === img
+                      ? "border-[#003366] shadow-md"
+                      : "border-transparent hover:border-gray-300"
+                      }`}
                   >
                     <img
                       src={img}
@@ -651,15 +650,15 @@ export default function ProductDetailPage() {
                     const ordersRes = await fetch("https://api.25zone.io.vn/api/orders/me", {
                       headers: { Authorization: `Bearer ${authToken}` },
                     });
-                    
+
                     console.log("Orders response status:", ordersRes.status);
                     if (ordersRes.ok) {
                       const data = await ordersRes.json();
                       const orders = data.orders || [];
                       console.log("Orders found:", orders.length, orders);
-                      
+
                       let hasPurchased = false;
-                      
+
                       for (const order of orders) {
                         const detailRes = await fetch(`https://api.25zone.io.vn/api/orders/me/${order.Id_order}`, {
                           headers: { Authorization: `Bearer ${authToken}` },
@@ -685,7 +684,7 @@ export default function ProductDetailPage() {
                   } catch (error) {
                     console.error("Lỗi kiểm tra mua hàng:", error);
                   }
-                  
+
                   setCheckingPurchase(false);
                   setShowReview(true);
                 }}

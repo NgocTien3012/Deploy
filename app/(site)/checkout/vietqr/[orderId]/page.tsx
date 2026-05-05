@@ -59,7 +59,21 @@ function VietQRContent() {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
+    // Cập nhật trạng thái thanh toán lên server
+    try {
+      await fetch(`https://api.25zone.io.vn/api/orders/${params.orderId}/payment`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ status_payment: 1 }),
+      });
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái thanh toán:", err);
+    }
+
     // Hiển thị popup thanh toán thành công
     setPaymentSuccessPopup(true);
     setTimeout(() => {

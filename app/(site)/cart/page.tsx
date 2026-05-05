@@ -440,66 +440,66 @@ export default function CartPage() {
                 return (
                 <div
                   key={`suggest-${p.Id_product}`}
-                  className="w-full h-full relative group/card"
+                  className="group bg-white rounded-[34px] shadow-2xl overflow-hidden flex flex-col cursor-pointer transition-transform hover:-translate-y-1"
                   onClick={() => router.push(`/products/${p.Id_product}`)}
                 >
-                  <div className="bg-white rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-md sm:shadow-lg max-w-[320px] mx-auto w-full h-full flex flex-col transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,51,102,0.12)] cursor-pointer border border-transparent hover:border-blue-100 relative z-10">
-                    <div className="relative w-full overflow-hidden aspect-square bg-[#f8f9fa]">
+                  {/* IMAGE */}
+                  <div className="relative overflow-hidden rounded-t-[34px]">
+                    <div className="aspect-[4/4]">
                       <img
-                        alt={p.Name_product}
-                        className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 mix-blend-darken"
                         src={thumbnail}
+                        alt={p.Name_product}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      {/* Premium Image Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
+                    </div>
+                  </div>
+
+                  {/* CONTENT */}
+                  <div className="bg-white rounded-t-[34px] -mt-6 sm:-mt-8 px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7 lg:pt-8 pb-6 sm:pb-8 lg:pb-10 relative flex-1 flex flex-col">
+                    <h3 className="text-[17px] sm:text-[20px] lg:text-[24px] leading-tight font-extrabold text-[#003366] uppercase line-clamp-2 min-h-[2.5em]">
+                      {p.Name_product}
+                    </h3>
+
+                    <p className="mt-2 sm:mt-3 text-[#003366] font-semibold text-sm sm:text-base">
+                      {p.Category_Name || p.Category || "Sản phẩm"}
+                    </p>
+                    <div className="h-[4px] lg:h-[5px] w-12 sm:w-14 lg:w-16 bg-[#003366] mt-2"></div>
+
+                    <div className="h-px bg-gray-300 mt-4 sm:mt-6"></div>
+
+                    <p className="mt-3 sm:mt-4 text-[11px] sm:text-xs text-gray-400 uppercase tracking-wider font-bold">
+                      GIÁ SẢN PHẨM
+                    </p>
+
+                    <div className="mt-2 flex items-center mb-4 sm:mb-6">
+                      <span className="text-[#8b1e1e] font-extrabold text-[24px] sm:text-[32px] lg:text-[36px] leading-none tabular-nums">
+                        {(p.Sale_Price || p.Price || 0).toLocaleString('vi-VN')}₫
+                      </span>
                     </div>
 
-                    <div className="bg-white flex-1 flex flex-col rounded-t-[24px] sm:rounded-t-[32px] -mt-6 sm:-mt-8 p-4 sm:p-6 relative z-10 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
-                      <h3 className="text-[14px] sm:text-[20px] leading-snug font-extrabold text-[#002244] uppercase line-clamp-2 min-h-[42px] sm:min-h-[60px] group-hover/card:text-blue-600 transition-colors">
-                        {p.Name_product}
-                      </h3>
-                      
-                      <p className="text-[10px] sm:text-xs text-gray-500 mt-1 line-clamp-1 font-medium">
-                        {p.Category_Name || p.Category || "Sản phẩm"}
-                      </p>
-
-                      <div className="h-[2px] sm:h-[3px] w-8 sm:w-10 bg-blue-500 mt-3 mb-4 rounded-full"></div>
-
-                      <div className="mt-auto">
-                        <div className="flex items-end justify-between mt-1 gap-2">
-                          <div className="flex flex-col">
-                            <span className="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Giá ưu đãi</span>
-                            <span className="text-[#cc0000] font-black text-base sm:text-2xl tracking-tight break-words">
-                              {(p.Sale_Price || p.Price || 0).toLocaleString('vi-VN')}đ
-                            </span>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={(e) => {
-                             e.preventDefault();
-                             e.stopPropagation();
-                             const newCart = [...cart];
-                             const index = newCart.findIndex(item => item.Id_product === p.Id_product);
-                             if (index !== -1) {
-                               newCart[index].quantity += 1;
-                             } else {
-                               newCart.push({ ...p, quantity: 1 });
-                             }
-                             setCart(newCart);
-                             localStorage.setItem(getUserStorageKey("cart"), JSON.stringify(newCart));
-                             window.dispatchEvent(new Event("cart-updated"));
-                             setPopupProduct(p);
-                             setShowPopup(true);
-                             setTimeout(() => setShowPopup(false), 2500);
-                          }}
-                          className="w-full mt-4 sm:mt-5 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#003366] to-[#004080] text-white font-bold text-[11px] sm:text-sm tracking-wide transition-all duration-300 hover:shadow-[0_8px_20px_rgba(0,51,102,0.3)] hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 group-hover/card:from-blue-600 group-hover/card:to-[#003366]"
-                        >
-                          <i className="fa-solid fa-cart-shopping opacity-80"></i>
-                          THÊM VÀO GIỎ
-                        </button>
-                      </div>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                         e.preventDefault();
+                         e.stopPropagation();
+                         const newCart = [...cart];
+                         const index = newCart.findIndex(item => item.Id_product === p.Id_product);
+                         if (index !== -1) {
+                           newCart[index].quantity += 1;
+                         } else {
+                           newCart.push({ ...p, quantity: 1 });
+                         }
+                         setCart(newCart);
+                         localStorage.setItem(getUserStorageKey("cart"), JSON.stringify(newCart));
+                         window.dispatchEvent(new Event("cart-updated"));
+                         setPopupProduct(p);
+                         setShowPopup(true);
+                         setTimeout(() => setShowPopup(false), 2500);
+                      }}
+                      className="mt-auto w-full py-3 sm:py-4 rounded-2xl bg-[#003366] text-white font-extrabold tracking-wide hover:bg-[#00264d] active:scale-95 transition"
+                    >
+                      THÊM VÀO GIỎ HÀNG
+                    </button>
                   </div>
                 </div>
                 );

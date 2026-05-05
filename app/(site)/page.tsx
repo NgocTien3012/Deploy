@@ -288,13 +288,13 @@ export default function HomePage() {
         setBestSeller(Array.isArray(allProducts) ? allProducts.slice(0, 4) : []);
 
         // Lấy luôn data từ API tổng (allProducts) vì API theo category đang báo lỗi 500
-        const sapData = Array.isArray(allProducts) 
-          ? allProducts.filter((p: any) => p.Category_Name === "Sáp vuốt tóc" || p.Id_category_product === 1) 
+        const sapData = Array.isArray(allProducts)
+          ? allProducts.filter((p: any) => p.Category_Name === "Sáp vuốt tóc" || p.Id_category_product === 1)
           : [];
         setSapVuotToc(sapData.slice(0, 4)); // Lấy 4 sản phẩm hiển thị
 
-        const dauData = Array.isArray(allProducts) 
-          ? allProducts.filter((p: any) => p.Category_Name === "Dầu gội" || p.Id_category_product === 8) 
+        const dauData = Array.isArray(allProducts)
+          ? allProducts.filter((p: any) => p.Category_Name === "Dầu gội" || p.Id_category_product === 8)
           : [];
         setDauGoi(dauData.slice(0, 4)); // Lấy 4 sản phẩm hiển thị
       } catch (err) {
@@ -437,17 +437,17 @@ export default function HomePage() {
           <div className="w-full lg:w-[40%] relative right-0 lg:right-20 z-10 group mt-4 lg:mt-0">
             {/* 3D Floating Container */}
             <div className="rounded-[2rem] overflow-hidden relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-white/10 group-hover:border-cyan-400/50 transition-all duration-700 ease-out group-hover:-translate-y-2 group-hover:shadow-[0_30px_60px_rgba(0,229,255,0.3)]">
-              
+
               {/* Image with Grayscale reveal effect */}
-              <img 
-                className="w-full object-cover scale-110 grayscale group-hover:grayscale-0 group-hover:scale-100 transition-all duration-[1500ms] ease-out" 
-                src="/img/Rectangle%2024827.png" 
-                alt="Flash Sale Banner" 
+              <img
+                className="w-full object-cover scale-110 grayscale group-hover:grayscale-0 group-hover:scale-100 transition-all duration-[1500ms] ease-out"
+                src="/img/Rectangle%2024827.png"
+                alt="Flash Sale Banner"
               />
-              
+
               {/* CRT Scanline Overlay */}
               <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.2)_2px,rgba(0,0,0,0.2)_4px)] pointer-events-none opacity-40 group-hover:opacity-20 transition-opacity duration-1000"></div>
-              
+
               {/* Dark Overlay for bottom text */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-[#000a14]/50 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -464,7 +464,7 @@ export default function HomePage() {
               </div>
 
               {/* Cyber-HUD Badge (Bottom Left) */}
-              <div 
+              <div
                 className="absolute bottom-8 left-[-10px] bg-cyan-400 text-black pl-8 pr-6 py-3 border-r-8 border-black shadow-[10px_10px_0px_rgba(0,0,0,0.8)] z-20 group-hover:translate-x-4 transition-transform duration-500"
                 style={{ clipPath: "polygon(0 0, 100% 0, 92% 100%, 0 100%)" }}
               >
@@ -478,15 +478,15 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            
+
             {/* 3D Floating Element - Starburst breaking out of the container! */}
             <div className="absolute -bottom-6 -right-6 sm:-bottom-10 sm:-right-10 w-32 h-32 sm:w-40 sm:h-40 z-30 group-hover:scale-125 group-hover:rotate-[15deg] transition-all duration-700 pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
               <svg viewBox="0 0 100 100" className="w-full h-full text-[#ff003c] fill-current animate-[spin_20s_linear_infinite_reverse]">
-                 <polygon points="50,5 61,28 86,14 74,38 98,50 74,62 86,86 61,72 50,95 39,72 14,86 26,62 2,50 26,38 14,14 39,28" stroke="#000" strokeWidth="2.5" />
+                <polygon points="50,5 61,28 86,14 74,38 98,50 74,62 86,86 61,72 50,95 39,72 14,86 26,62 2,50 26,38 14,14 39,28" stroke="#000" strokeWidth="2.5" />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center -rotate-[15deg]">
-                 <span className="text-yellow-400 font-black italic text-3xl sm:text-4xl leading-none tracking-tighter" style={{ WebkitTextStroke: "1.5px black" }}>HOT</span>
-                 <span className="text-white font-black italic text-xl sm:text-2xl leading-none tracking-tighter mt-[-4px] drop-shadow-[2px_2px_0_#000]">DEAL!</span>
+                <span className="text-yellow-400 font-black italic text-3xl sm:text-4xl leading-none tracking-tighter" style={{ WebkitTextStroke: "1.5px black" }}>HOT</span>
+                <span className="text-white font-black italic text-xl sm:text-2xl leading-none tracking-tighter mt-[-4px] drop-shadow-[2px_2px_0_#000]">DEAL!</span>
               </div>
             </div>
           </div>
@@ -496,20 +496,20 @@ export default function HomePage() {
               <div className="relative group cursor-pointer w-fit mb-4 sm:mb-0">
                 {/* 3D Offset Shadow Background */}
                 <div className="absolute inset-0 bg-yellow-400 rounded-2xl skew-x-[-12deg] translate-x-1.5 translate-y-1.5 sm:translate-x-2 sm:translate-y-2 transition-transform duration-300 group-hover:translate-x-3 group-hover:translate-y-3 shadow-lg"></div>
-                
+
                 {/* Main Box */}
                 <div className="relative flex items-center gap-4 sm:gap-5 bg-gradient-to-r from-[#00152b] via-[#003366] to-[#004080] border border-white/20 px-8 sm:px-10 py-3.5 sm:py-4 rounded-2xl skew-x-[-12deg] overflow-hidden backdrop-blur-md">
                   {/* Glassmorphism Shine Effect */}
                   <div className="absolute top-0 left-[-150%] w-[150%] h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-20deg] group-hover:left-[150%] transition-all duration-1000 ease-in-out"></div>
-                  
+
                   {/* Glowing Lightning Icon */}
                   <div className="relative skew-x-[12deg] flex items-center justify-center">
                     <div className="absolute inset-0 bg-yellow-400 blur-[20px] opacity-40 animate-pulse rounded-full"></div>
                     <i className="fa-solid fa-bolt text-yellow-400 text-4xl sm:text-5xl relative z-10 drop-shadow-[0_0_12px_rgba(250,204,21,0.9)] group-hover:scale-110 transition-transform duration-300"></i>
                   </div>
-                  
+
                   {/* Glitch / Chromatic Aberration Text */}
-                  <h1 
+                  <h1
                     className="text-3xl sm:text-4xl font-black tracking-[0.15em] skew-x-[12deg] italic text-white uppercase relative z-10"
                     style={{ textShadow: "2.5px 0px 0px #ff003c, -2.5px 0px 0px #00e5ff" }}
                   >
@@ -530,7 +530,7 @@ export default function HomePage() {
                   </div>
                   <span className="text-[#003366] text-[10px] sm:text-xs font-black mt-2 uppercase tracking-widest drop-shadow-sm">Giờ</span>
                 </div>
-                
+
                 <span className="text-[#003366] font-black text-2xl sm:text-3xl animate-pulse mb-6 drop-shadow-md">:</span>
 
                 {/* Minutes */}
@@ -544,7 +544,7 @@ export default function HomePage() {
                   </div>
                   <span className="text-[#003366] text-[10px] sm:text-xs font-black mt-2 uppercase tracking-widest drop-shadow-sm">Phút</span>
                 </div>
-                
+
                 <span className="text-[#003366] font-black text-2xl sm:text-3xl animate-pulse mb-6 drop-shadow-md">:</span>
 
                 {/* Seconds */}

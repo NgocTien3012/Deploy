@@ -215,7 +215,7 @@ function ProductsContent() {
       const params = new URLSearchParams();
       cats.forEach((c) => params.append("categories", c));
       brands.forEach((b) => params.append("brands", b));
-      
+
       const rawMin = pMin.replace(/[^\d]/g, "");
       const rawMax = pMax.replace(/[^\d]/g, "");
       if (rawMin) params.append("priceMin", rawMin);
@@ -223,7 +223,7 @@ function ProductsContent() {
 
       const res = await fetch(`https://api.25zone.io.vn/api/sanpham/filter?${params.toString()}`);
       const data = await res.json();
-      
+
       const available = Array.isArray(data) ? data.filter((p: any) => p.Quantity && p.Quantity > 0) : [];
       setProducts(available);
       setHasAppliedFilter(true);

@@ -15,6 +15,8 @@ type OrderItem = {
   Status: "pending" | "confirmed" | "processing" | "completed" | "cancelled";
   Payment_method_name: string | null;
   Order_code: string;
+  Status_payment: number;
+
   Total_items: number;
   First_product_name: string;
   First_product_image: string | null;
@@ -22,6 +24,7 @@ type OrderItem = {
 
 type OrderDetailItem = {
   Id_product: number;
+
   Quantity: number;
   Price: number;
   Name_product: string;
@@ -369,7 +372,7 @@ export default function AccountOrdersPage() {
                           <i className="fa-solid fa-credit-card text-gray-400"></i>
                           Thanh toán:
                           <span className="font-semibold text-gray-800">
-                            {order.Payment_method_name || "Không xác định"}
+                            {order.Payment_method_name || "COD"}
                           </span>
                         </div>
                         <div className="flex gap-3">
