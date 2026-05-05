@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { loadToken } from "@/lib/auth-storage";
@@ -16,6 +16,7 @@ interface Product {
   Sale_Price?: number;
   Category_Name: string;
   Thumbnail?: string;
+  Images?: string[];
   Quantity?: number;
   Usage_Instructions?: string;
   Ingredients?: string;
@@ -118,6 +119,38 @@ export default function ProductDetailPage() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [checkingPurchase, setCheckingPurchase] = useState(false);
   const [showNotPurchasedPopup, setShowNotPurchasedPopup] = useState(false);
+
+  const [activeImage, setActiveImage] = useState<string>("");
+
+  const images = useMemo(() => {
+    let urls: string[] = [];
+    
+    // Nếu API trả về mảng Images, ưu tiên dùng nó
+    if (product?.Images && Array.isArray(product.Images) && product.Images.length > 0) {
+      urls = product.Images;
+    } 
+    // Nếu không có mảng Images, fallback về Thumbnail
+    else if (product?.Thumbnail) {
+      try {
+        const parsed = JSON.parse(product.Thumbnail);
+        if (Array.isArray(parsed)) {
+          urls = parsed;
+        }
+      } catch {
+        urls = [product.Thumbnail];
+      }
+    }
+
+    return urls.map((url: string) => url.startsWith("http") ? url : `https://api.25zone.io.vn${url}`);
+  }, [product]);
+
+  useEffect(() => {
+    if (images.length > 0 && (!activeImage || !images.includes(activeImage))) {
+      setActiveImage(images[0]);
+    }
+  }, [images, activeImage]);
+
+  const displayImages = images;
 
   useEffect(() => {
     if (!id) return;
@@ -250,6 +283,15 @@ export default function ProductDetailPage() {
 
   return (
     <main className="font-spline">
+      <style>{`
+        @keyframes popIn {
+          0% { opacity: 0; transform: scale(0.97) translateY(5px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop-in {
+          animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
       <section className="max-w-[1604px] mx-auto px-4 lg:px-10 py-10">
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <a className="hover:text-[#003366] font-semibold transition" href="/">
@@ -267,13 +309,37 @@ export default function ProductDetailPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-5">
-            <div className="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm flex justify-center">
+            <div className="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm flex justify-center mb-4 min-h-[300px] items-center">
               <img
-                src={`https://api.25zone.io.vn${product.Thumbnail}`}
+                key={activeImage}
+                src={activeImage || (product.Thumbnail ? `https://api.25zone.io.vn${product.Thumbnail}` : "/img/placeholder.png")}
                 alt={product.Name_product}
-                className="w-full max-w-[420px] max-h-[420px] object-contain"
+                className="w-full max-w-[420px] max-h-[420px] object-contain animate-pop-in"
               />
             </div>
+
+            {displayImages.length > 1 && (
+              <div className="flex justify-center gap-4 overflow-x-auto pb-2">
+                {displayImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImage(img)}
+                    className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 overflow-hidden transition-all ${
+                      activeImage === img
+                        ? "border-[#003366] shadow-md"
+                        : "border-transparent hover:border-gray-300"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`${product.Name_product} - ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
 
 
           </div>
