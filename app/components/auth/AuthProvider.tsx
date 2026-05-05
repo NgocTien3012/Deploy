@@ -20,6 +20,7 @@ import {
   type AuthTokens,
 } from "@/lib/auth-storage";
 import type { AuthUser } from "@/lib/auth-types";
+import { clearGuestCart, mergeGuestCartIntoUserCart } from "@/lib/cart-merge";
 
 type AuthContextValue = {
   token: string | null;
@@ -65,6 +66,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     }
 
+    // Xoá giỏ hàng guest khi đăng xuất (giỏ user vẫn được giữ nguyên)
+    clearGuestCart();
+
     setToken(null);
     setRefreshToken(null);
     setUserState(null);
@@ -94,6 +98,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setRefreshToken(nextTokens.refreshToken);
       setUserState(nextUser);
       saveAuth(nextTokens, nextUser, remember);
+      // Merge giỏ hàng guest vào giỏ hàng của user sau khi đăng nhập
+      if (nextUser?.Id_user) {
+        mergeGuestCartIntoUserCart(nextUser.Id_user);
+      }
     },
     [],
   );

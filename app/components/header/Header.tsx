@@ -17,7 +17,7 @@ import { LogoutSuccessToast } from "@/app/components/auth/LogoutSuccessToast";
 
 const nav = [
   { href: "/", label: "Trang chủ" },
-  { href: "http://localhost:3003", label: "25Zonebooking" },
+  { href: "https://25zone-booking.vercel.app/", label: "25Zonebooking" },
   { href: "/products", label: "Sản phẩm" },
   { href: "/promotions", label: "Khuyến mãi" },
   { href: "/news", label: "Tin tức" },
@@ -80,11 +80,23 @@ export default function Header() {
     setFavoritesOpen(false);
   }, [pathname]);
 
-  const { getFavorites, removeFavorite } = useFavorites();
+  const { getFavorites, removeFavorite, syncFromDB } = useFavorites();
   const { addToCart } = useCart();
   const [favList, setFavList] = useState<any[]>([]);
-  const [toastItem, setToastItem] = useState<{ product: any, message: string, isAdd: boolean } | null>(null);
+  const [toastItem, setToastItem] = useState<{
+    product: any;
+    message: string;
+    isAdd: boolean;
+  } | null>(null);
   const toastTimeoutRef = useRef<number | null>(null);
+
+  // Khi user đăng nhập xong → sync favorites từ DB về localStorage
+  useEffect(() => {
+    if (user) {
+      syncFromDB();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     setFavList(getFavorites());
@@ -94,7 +106,10 @@ export default function Header() {
       const { product, message } = e.detail;
       setToastItem({ product, message, isAdd: message.includes("thêm") });
       if (toastTimeoutRef.current) window.clearTimeout(toastTimeoutRef.current);
-      toastTimeoutRef.current = window.setTimeout(() => setToastItem(null), 3000);
+      toastTimeoutRef.current = window.setTimeout(
+        () => setToastItem(null),
+        3000,
+      );
     };
 
     window.addEventListener("favorites-updated", handleUpdate);
@@ -111,18 +126,22 @@ export default function Header() {
     const updateCartCount = () => {
       const key = getUserStorageKey("cart");
       const cart = JSON.parse(localStorage.getItem(key) || "[]");
-      const count = cart.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0);
+      const count = cart.reduce(
+        (sum: number, item: any) => sum + (item.quantity || 1),
+        0,
+      );
       setCartCount(count);
     };
 
     updateCartCount();
     window.addEventListener("cart-updated", updateCartCount);
     return () => window.removeEventListener("cart-updated", updateCartCount);
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const lockScroll = useMemo(
     () => drawerOpen || (searchOpen && !isDesktop) || authOpen || favoritesOpen,
-    [drawerOpen, searchOpen, isDesktop, authOpen, favoritesOpen]
+    [drawerOpen, searchOpen, isDesktop, authOpen, favoritesOpen],
   );
 
   useEffect(() => {
@@ -195,7 +214,12 @@ export default function Header() {
 
         <nav className="hidden lg:flex items-center gap-9">
           {nav.map((item) => (
-            <NavLink key={item.label} href={item.href} label={item.label} pathname={pathname} />
+            <NavLink
+              key={item.label}
+              href={item.href}
+              label={item.label}
+              pathname={pathname}
+            />
           ))}
         </nav>
 
@@ -243,7 +267,7 @@ export default function Header() {
             <i className="fa-solid fa-cart-shopping text-[20px]" />
             {cartCount > 0 && (
               <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                {cartCount > 99 ? '99+' : cartCount}
+                {cartCount > 99 ? "99+" : cartCount}
               </span>
             )}
           </Link>
@@ -270,8 +294,14 @@ export default function Header() {
                 className="h-[50px] rounded-full border border-gray-200 px-3 pr-4 flex items-center gap-3
                 hover:border-[#33B1FA] hover:bg-sky-50 transition"
               >
-                <img src={avatar} alt={displayName} className="w-9 h-9 rounded-full object-cover" />
-                <span className="font-extrabold text-sm max-w-[160px] truncate">{displayName}</span>
+                <img
+                  src={avatar}
+                  alt={displayName}
+                  className="w-9 h-9 rounded-full object-cover"
+                />
+                <span className="font-extrabold text-sm max-w-[160px] truncate">
+                  {displayName}
+                </span>
                 <i className="fa-solid fa-chevron-down text-xs text-gray-500" />
               </button>
 
@@ -335,26 +365,35 @@ export default function Header() {
 
       {/* Toast Notification */}
       <div
-        className={`fixed top-24 right-6 z-[80] bg-white border border-gray-100 shadow-2xl rounded-2xl p-4 w-[320px] flex items-center gap-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${toastItem ? 'translate-x-0 opacity-100' : 'translate-x-[120%] opacity-0 pointer-events-none'}`}
+        className={`fixed top-24 right-6 z-[80] bg-white border border-gray-100 shadow-2xl rounded-2xl p-4 w-[320px] flex items-center gap-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${toastItem ? "translate-x-0 opacity-100" : "translate-x-[120%] opacity-0 pointer-events-none"}`}
       >
         {toastItem && (
           <>
             <img
               src={(() => {
-                if (!toastItem.product?.Thumbnail) return "/img/placeholder.png";
+                if (!toastItem.product?.Thumbnail)
+                  return "/img/placeholder.png";
                 try {
                   const parsed = JSON.parse(toastItem.product.Thumbnail);
-                  return parsed[0].startsWith("http") ? parsed[0] : `https://api.25zone.io.vn${parsed[0]}`;
+                  return parsed[0].startsWith("http")
+                    ? parsed[0]
+                    : `https://api.25zone.io.vn${parsed[0]}`;
                 } catch {
-                  return toastItem.product.Thumbnail.startsWith("/") ? `https://api.25zone.io.vn${toastItem.product.Thumbnail}` : `https://api.25zone.io.vn/${toastItem.product.Thumbnail}`;
+                  return toastItem.product.Thumbnail.startsWith("/")
+                    ? `https://api.25zone.io.vn${toastItem.product.Thumbnail}`
+                    : `https://api.25zone.io.vn/${toastItem.product.Thumbnail}`;
                 }
               })()}
               alt=""
               className="w-14 h-14 object-contain bg-[#f8f9fb] rounded-xl p-1"
             />
             <div className="flex-1">
-              <p className="font-bold text-sm text-[#003366] line-clamp-1">{toastItem.product?.Name_product}</p>
-              <p className={`text-sm font-bold mt-1 ${toastItem.isAdd ? 'text-green-600' : 'text-red-500'}`}>
+              <p className="font-bold text-sm text-[#003366] line-clamp-1">
+                {toastItem.product?.Name_product}
+              </p>
+              <p
+                className={`text-sm font-bold mt-1 ${toastItem.isAdd ? "text-green-600" : "text-red-500"}`}
+              >
                 {toastItem.message}
               </p>
             </div>
@@ -365,7 +404,8 @@ export default function Header() {
       {/* Favorites Drawer (Slide from Left) */}
       <div
         className={
-          "fixed inset-0 z-[60] " + (favoritesOpen ? "pointer-events-auto" : "pointer-events-none")
+          "fixed inset-0 z-[60] " +
+          (favoritesOpen ? "pointer-events-auto" : "pointer-events-none")
         }
         aria-hidden={!favoritesOpen}
       >
@@ -404,14 +444,17 @@ export default function Header() {
                   <i className="fa-regular fa-heart text-[4rem] text-rose-300 absolute z-10 animate-pulse"></i>
                   <div className="absolute inset-0 rounded-full bg-rose-100/50 animate-ping opacity-20"></div>
                 </div>
-                <h3 className="text-xl font-extrabold text-[#003366] mb-3">Chưa có sản phẩm nào</h3>
+                <h3 className="text-xl font-extrabold text-[#003366] mb-3">
+                  Chưa có sản phẩm nào
+                </h3>
                 <p className="text-sm text-slate-500 mb-8 max-w-[250px] leading-relaxed">
-                  Hãy thêm những sản phẩm bạn yêu thích để dễ dàng mua sắm sau nhé!
+                  Hãy thêm những sản phẩm bạn yêu thích để dễ dàng mua sắm sau
+                  nhé!
                 </p>
                 <button
                   onClick={() => {
                     setFavoritesOpen(false);
-                    router.push('/products');
+                    router.push("/products");
                   }}
                   className="px-8 py-3.5 bg-[#003366] text-white rounded-full font-extrabold tracking-wider hover:bg-[#33B1FA] hover:shadow-lg hover:shadow-[#33B1FA]/30 transition-all duration-300 active:scale-95"
                 >
@@ -424,11 +467,17 @@ export default function Header() {
                   <div
                     key={item.Id_product}
                     className="group relative flex gap-4 bg-white p-4 border border-gray-100 rounded-2xl hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 transition-all duration-300"
-                    style={{ animationFillMode: 'both', animationDelay: `${index * 50}ms` }}
+                    style={{
+                      animationFillMode: "both",
+                      animationDelay: `${index * 50}ms`,
+                    }}
                   >
                     {/* Delete button absolutely positioned on top right */}
                     <button
-                      onClick={(e) => { e.preventDefault(); removeFavorite(item.Id_product); }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        removeFavorite(item.Id_product);
+                      }}
                       className="absolute right-3 top-3 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-rose-500 bg-white hover:bg-rose-50 rounded-full transition-all md:opacity-0 md:group-hover:opacity-100 shadow-sm z-10"
                       aria-label="Xóa khỏi danh sách"
                     >
@@ -445,9 +494,13 @@ export default function Header() {
                           if (!item.Thumbnail) return "/img/placeholder.png";
                           try {
                             const parsed = JSON.parse(item.Thumbnail);
-                            return parsed[0].startsWith("http") ? parsed[0] : `https://api.25zone.io.vn${parsed[0]}`;
+                            return parsed[0].startsWith("http")
+                              ? parsed[0]
+                              : `https://api.25zone.io.vn${parsed[0]}`;
                           } catch {
-                            return item.Thumbnail.startsWith("/") ? `https://api.25zone.io.vn${item.Thumbnail}` : `https://api.25zone.io.vn/${item.Thumbnail}`;
+                            return item.Thumbnail.startsWith("/")
+                              ? `https://api.25zone.io.vn${item.Thumbnail}`
+                              : `https://api.25zone.io.vn/${item.Thumbnail}`;
                           }
                         })()}
                         alt={item.Name_product}
@@ -468,18 +521,20 @@ export default function Header() {
 
                       <div className="flex items-end justify-between mt-2">
                         <div className="flex flex-col">
-                          {item.Sale_Price && item.Price && item.Sale_Price < item.Price ? (
+                          {item.Sale_Price &&
+                          item.Price &&
+                          item.Sale_Price < item.Price ? (
                             <>
                               <span className="text-[#003366] font-extrabold text-[16px]">
-                                {item.Sale_Price.toLocaleString('vi-VN')}₫
+                                {item.Sale_Price.toLocaleString("vi-VN")}₫
                               </span>
                               <span className="text-[12px] text-slate-400 line-through font-medium">
-                                {item.Price.toLocaleString('vi-VN')}₫
+                                {item.Price.toLocaleString("vi-VN")}₫
                               </span>
                             </>
                           ) : (
                             <span className="text-[#003366] font-extrabold text-[16px]">
-                              {(item.Price || 0).toLocaleString('vi-VN')}₫
+                              {(item.Price || 0).toLocaleString("vi-VN")}₫
                             </span>
                           )}
                         </div>
@@ -488,7 +543,14 @@ export default function Header() {
                           onClick={(e) => {
                             e.preventDefault();
                             addToCart(item);
-                            window.dispatchEvent(new CustomEvent("favorites-toast", { detail: { product: item, message: "Đã thêm vào giỏ hàng!" } }));
+                            window.dispatchEvent(
+                              new CustomEvent("favorites-toast", {
+                                detail: {
+                                  product: item,
+                                  message: "Đã thêm vào giỏ hàng!",
+                                },
+                              }),
+                            );
                           }}
                           className="w-10 h-10 rounded-full bg-[#f0f5fa] text-[#003366] flex items-center justify-center hover:bg-[#003366] hover:text-white transition-colors active:scale-95 shrink-0"
                           title="Thêm vào giỏ"
@@ -507,12 +569,23 @@ export default function Header() {
             <div className="absolute bottom-0 left-0 w-full p-6 border-t border-gray-100 bg-white z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] flex flex-col gap-4">
               <div className="flex justify-between items-center px-1">
                 <span className="text-[15px] font-bold text-slate-500">
-                  Tổng: <span className="text-[#003366] font-extrabold">{favList.length}</span> sản phẩm
+                  Tổng:{" "}
+                  <span className="text-[#003366] font-extrabold">
+                    {favList.length}
+                  </span>{" "}
+                  sản phẩm
                 </span>
                 <button
                   onClick={() => {
-                    favList.forEach(item => removeFavorite(item.Id_product));
-                    window.dispatchEvent(new CustomEvent("favorites-toast", { detail: { product: { Name_product: "Thành công" }, message: "Đã xóa toàn bộ danh sách!" } }));
+                    favList.forEach((item) => removeFavorite(item.Id_product));
+                    window.dispatchEvent(
+                      new CustomEvent("favorites-toast", {
+                        detail: {
+                          product: { Name_product: "Thành công" },
+                          message: "Đã xóa toàn bộ danh sách!",
+                        },
+                      }),
+                    );
                   }}
                   className="text-[14px] font-bold text-slate-400 hover:text-rose-500 transition-colors underline underline-offset-4 decoration-transparent hover:decoration-rose-200"
                 >
@@ -522,14 +595,22 @@ export default function Header() {
               <div className="flex gap-3">
                 <button
                   onClick={() => {
-                    favList.forEach(item => addToCart(item));
-                    window.dispatchEvent(new CustomEvent("favorites-toast", { detail: { product: favList[0] || { Name_product: "Thành công" }, message: `Đã thêm ${favList.length} món vào giỏ hàng!` } }));
+                    favList.forEach((item) => addToCart(item));
+                    window.dispatchEvent(
+                      new CustomEvent("favorites-toast", {
+                        detail: {
+                          product: favList[0] || { Name_product: "Thành công" },
+                          message: `Đã thêm ${favList.length} món vào giỏ hàng!`,
+                        },
+                      }),
+                    );
                     window.dispatchEvent(new Event("cart-updated"));
                     setFavoritesOpen(false);
                   }}
                   className="flex-1 py-4 rounded-xl font-extrabold text-[15px] bg-[#003366] text-white hover:bg-[#33B1FA] hover:shadow-lg hover:shadow-[#33B1FA]/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
-                  <i className="fa-solid fa-cart-plus text-lg"></i> THÊM TẤT CẢ VÀO GIỎ
+                  <i className="fa-solid fa-cart-plus text-lg"></i> THÊM TẤT CẢ
+                  VÀO GIỎ
                 </button>
               </div>
             </div>
@@ -539,7 +620,8 @@ export default function Header() {
 
       <div
         className={
-          "fixed inset-0 z-[60] lg:hidden " + (drawerOpen ? "pointer-events-auto" : "pointer-events-none")
+          "fixed inset-0 z-[60] lg:hidden " +
+          (drawerOpen ? "pointer-events-auto" : "pointer-events-none")
         }
         aria-hidden={!drawerOpen}
       >
@@ -561,21 +643,28 @@ export default function Header() {
           aria-modal="true"
         >
           <div className="flex items-center justify-between border-b px-4 py-4">
-            <span className="font-extrabold uppercase tracking-wider text-[#003366]">Menu</span>
+            <span className="font-extrabold uppercase tracking-wider text-[#003366]">
+              Menu
+            </span>
             <button
               type="button"
               aria-label="Close menu"
               className={iconBtnClass}
               onClick={() => setDrawerOpen(false)}
             >
-              <span className="material-symbols-outlined text-[26px]">close</span>
+              <span className="material-symbols-outlined text-[26px]">
+                close
+              </span>
             </button>
           </div>
 
           <div className="p-4">
             <div className="flex flex-col gap-2">
               {nav.map((item) => (
-                <div key={item.label} className="border border-gray-100 rounded-xl">
+                <div
+                  key={item.label}
+                  className="border border-gray-100 rounded-xl"
+                >
                   <NavLink
                     href={item.href}
                     label={item.label}
@@ -619,9 +708,15 @@ export default function Header() {
             {user && (
               <div className="mt-6 border-t pt-4 space-y-3">
                 <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-3">
-                  <img src={avatar} alt={displayName} className="w-10 h-10 rounded-full object-cover" />
+                  <img
+                    src={avatar}
+                    alt={displayName}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
                   <div>
-                    <p className="font-extrabold text-[#003366]">{displayName}</p>
+                    <p className="font-extrabold text-[#003366]">
+                      {displayName}
+                    </p>
                     <p className="text-xs text-gray-500">Đã đăng nhập</p>
                   </div>
                 </div>
@@ -671,7 +766,9 @@ export default function Header() {
           onDone={() => {
             setShowLogoutSuccess(false);
             const currentPath = window.location.pathname;
-            const isProtected = PROTECTED_ROUTES.some((r) => currentPath.startsWith(r));
+            const isProtected = PROTECTED_ROUTES.some((r) =>
+              currentPath.startsWith(r),
+            );
             if (isProtected) {
               router.push("/login");
             } else {

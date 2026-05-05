@@ -55,9 +55,6 @@ export default function CartPage() {
     fetchSuggested();
   }, []);
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem(getUserStorageKey("cart")) || "[]");
-    setCart(data);
-
     const voucher = JSON.parse(localStorage.getItem("voucher") || "null");
 
     if (voucher) {
@@ -113,7 +110,16 @@ export default function CartPage() {
       data.map((i) => i.Id_product),
     );
     setCart(data);
-  }, []);
+
+    // Lắng nghe cart-updated để cập nhật realtime (khi merge guest cart)
+    const handleUpdate = () => {
+      const updated: CartItem[] = JSON.parse(localStorage.getItem(getUserStorageKey("cart")) || "[]");
+      setCart(updated);
+    };
+    window.addEventListener("cart-updated", handleUpdate);
+    return () => window.removeEventListener("cart-updated", handleUpdate);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const total = cart.reduce((sum, item) => sum + item.Price * item.quantity, 0);
 

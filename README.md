@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 25zone-next (App Router + TypeScript) — “app hết, components không có _”
 
 Bản này đúng yêu cầu của bạn:
@@ -42,3 +43,7 @@ npm run dev
 Copy folder `img/` cũ vào: `public/img/`
 
 Lưu ý: ảnh có dấu cách (vd: `image 2.png`, `banner shop.png`) đã encode `%20` trong code.
+=======
+# Deploy
+Wiz
+>>>>>>> 5c89f1b1e668ec0549defd7e49c35bf90aa6603f
